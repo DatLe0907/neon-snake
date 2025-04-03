@@ -48,6 +48,7 @@ body {
   font-weight: 500;
   border: none;
   outline: none;
+  cursor: pointer;
 }
 
 .start__button:hover {
@@ -233,8 +234,6 @@ body {
   position: absolute;
   background-color: transparent;
   padding: 5vw;
-  cursor: url(https://sweezy-cursors.com/wp-content/uploads/cursor/green-snake-animated/green-snake-animated-pointer-32x32.png),
-    pointer !important;
   border: solid 1px #fff;
   color: #fff;
 }
@@ -318,8 +317,7 @@ body {
   box-shadow: 5px 5px 0 #000;
   border: none;
   outline: none;
-  cursor: url(https://sweezy-cursors.com/wp-content/uploads/cursor/green-snake-animated/green-snake-animated-pointer-32x32.png),
-    pointer !important;
+  cursor: pointer;
 }
 
 .modal__content button:hover {

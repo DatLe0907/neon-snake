@@ -209,6 +209,9 @@ function startGame() {
         clearInterval(intervalId);
         intervalId = setInterval(initGame, originSpeed);
         break;
+
+      default: 
+        break;
     }
   }
 
@@ -218,6 +221,7 @@ function startGame() {
   highScoreModal.innerText = `High Score: ${highScore}`;
 
   let intervalId;
+  let timeoutId;
   let intervalItem;
   // random tọa độ của đá
   const randomRock = () => {
@@ -260,6 +264,13 @@ function startGame() {
   //  áp dụng thuộc tính của effect;
   function effectActive(list, random) {
     list.forEach((effect, index) => {
+      if (effect.time) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          // Xóa hiệu ứng sau khi hết thời gian
+          clearTimers();
+        }, effect.time * 1000);
+      }
       if (index === random) {
         for (let i = 1; i <= effect.point; i++) {
           score++;
@@ -312,6 +323,7 @@ function startGame() {
 
   let htmlMarkup;
   function initGame() {
+    if (gameOver) return;
     // nếu tọa độ của food trùng với tọa độ của đá-> tạo quả táo khác
     rockList.forEach((rock) => {
       if ((foodX !== rock[0], foodY !== rock[1])) {
@@ -394,7 +406,7 @@ function startGame() {
       htmlMarkup += `<div class="game__snake" style="grid-area: ${snakeBody[i][1]} / ${snakeBody[i][0]};"></div>`;
       // nếu con rắn tự đụng vào body thì game over,nếu through = true thì k sao
       if (
-        i != 0 &&
+        i !== 0 &&
         snakeBody[0][1] === snakeBody[i][1] &&
         snakeBody[0][0] === snakeBody[i][0]
       ) {
@@ -465,17 +477,18 @@ function startGame() {
 
   function handleKeyPress() {
     document.addEventListener("keydown", function (e) {
+      e.preventDefault();
       // change velocity when key down
-      if ((e.key === "ArrowUp" || e.key === "w") && velocityY != 1) {
+      if ((e.key === "ArrowUp" || e.key === "w") && velocityY !== 1) {
         velocityX = 0;
         velocityY = -1;
-      } else if ((e.key === "ArrowDown" || e.key === "s") && velocityY != -1) {
+      } else if ((e.key === "ArrowDown" || e.key === "s") && velocityY !== -1) {
         velocityX = 0;
         velocityY = 1;
-      } else if ((e.key === "ArrowLeft" || e.key === "a") && velocityX != 1) {
+      } else if ((e.key === "ArrowLeft" || e.key === "a") && velocityX !== 1) {
         velocityX = -1;
         velocityY = 0;
-      } else if ((e.key === "ArrowRight" || e.key === "d") && velocityX != -1) {
+      } else if ((e.key === "ArrowRight" || e.key === "d") && velocityX !== -1) {
         velocityX = 1;
         velocityY = 0;
       }
@@ -483,16 +496,16 @@ function startGame() {
 
     controlBtn.forEach(function (btn) {
       btn.addEventListener("click", function (e) {
-        if (this.classList[0] === "up" && velocityY != 1) {
+        if (this.classList[0] === "up" && velocityY !== 1) {
           velocityX = 0;
           velocityY = -1;
-        } else if (this.classList[0] === "down" && velocityY != -1) {
+        } else if (this.classList[0] === "down" && velocityY !== -1) {
           velocityX = 0;
           velocityY = 1;
-        } else if (this.classList[0] === "left" && velocityX != 1) {
+        } else if (this.classList[0] === "left" && velocityX !== 1) {
           velocityX = -1;
           velocityY = 0;
-        } else if (this.classList[0] === "right" && velocityX != -1) {
+        } else if (this.classList[0] === "right" && velocityX !== -1) {
           velocityX = 1;
           velocityY = 0;
         }
@@ -505,13 +518,30 @@ function startGame() {
   intervalId = setInterval(initGame, speedEffect);
   // Game over
 
+  function clearTimers() {
+    if (intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  }
+
   const handleGameOver = () => {
-    clearInterval(intervalId);
+    clearTimers();
     modal.classList.add("show");
 
     function replayGame(e) {
       if (e.type === "click" || e.key === "Enter") {
         modal.classList.remove("show");
+        clearTimers();
+        gameOver = false;
+        snakeBody = [];
+        velocityX = 0;
+        velocityY = 0;
+        score = 0;
         startGame();
         removeEventListeners();
       }
